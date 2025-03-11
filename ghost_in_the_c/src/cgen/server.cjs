@@ -10,7 +10,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.post('/execute-python', (req, res) => {
-  const pythonProcess = spawn('python', ['pygen.py', req.body.input]); //Replace your_script.py and add input handling.
+  const pythonProcess = spawn('python', ['pygen.py', req.body.input]); 
 
   let output = '';
   let errorOutput = '';
