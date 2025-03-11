@@ -32,7 +32,6 @@ function App() {
     <>
       <div>
         <h1>Ghost In The C</h1>
-        <input type="text" value={input} onChange={(e)=> setInput(e.target.value)} />
         <button onClick={executePython}>Give me a problem</button>
         {pythonOutput && <p>Python Output: {pythonOutput}</p>}
       </div>
