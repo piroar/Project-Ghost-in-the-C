@@ -13,3 +13,16 @@
 Ανάλυση Υποπροβλήματος 2.:
 2.1:Παροχή terminal για την επίλυση του γρίφου
 2.2:Έλεγχος της λύσης
+
+
+site:
+npm run dev
+
+docker shell:
+sudo docker run -p 4200:4200 shellinabox
+shelluser:password
+
+server:
+source env/bin/activate
+node server.cjs(ανοίγει το venv με τα dependencies)
+deactivate

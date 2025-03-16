@@ -9,3 +9,14 @@ h1{
   font-size: 60px;
   text-align: center;
 }
+
+.terminal{
+  width: 900px;
+  height: 500px;
+  border: 1px solid #ffffff;
+}
+
+.terminal-div{
+  display: flex;
+  justify-content: center;
+}
