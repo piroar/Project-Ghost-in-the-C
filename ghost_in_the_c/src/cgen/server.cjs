@@ -11,12 +11,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.post('/execute-python', (req, res) => {
-  const activatescript="source env/bin/activate";
-  const pythonCommand=`python3 pygen.py ${JSON.stringify(req.body.input)}`;
-  const fullCommand=`${activatescript} && ${pythonCommand}`;
-  const pythonProcess= spawn('bash',['-c',fullCommand]);
-  
-  //const pythonProcess = spawn('python3', ['pygen.py', req.body.input]); 
+  const pythonProcess = spawn('python3', ['pygen.py', req.body.input]);
 
   let output = '';
   let errorOutput = '';

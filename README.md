@@ -26,3 +26,9 @@ server:
 source env/bin/activate
 node server.cjs(ανοίγει το venv με τα dependencies)
 deactivate
+
+Απαιτήσεις:
+1) architecture diagram
+2) docker based όλο
+3) unit tests και structured outputs
+(check highlight.js)

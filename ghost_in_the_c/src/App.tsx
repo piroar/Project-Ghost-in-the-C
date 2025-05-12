@@ -27,7 +27,7 @@ function App() {
       setPythonOutput('An error occurred.');
     }
   };
-
+  
   return (
     <>
       <div>
