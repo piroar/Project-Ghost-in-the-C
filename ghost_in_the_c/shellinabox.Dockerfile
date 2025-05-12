@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install shellinabox only
 RUN apt-get update && \
-    apt-get install -y shellinabox && \
+    apt-get install -y shellinabox nano gcc && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

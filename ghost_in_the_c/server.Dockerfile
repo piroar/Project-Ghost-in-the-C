@@ -13,6 +13,7 @@ RUN npm install
 # Copy the server code and the python script
 COPY src/cgen/server.cjs ./
 COPY src/cgen/pygen.py ./
+COPY src/cgen/.env ./
 COPY requirements.txt ./
 
 # Install Python and any necessary Python dependencies
