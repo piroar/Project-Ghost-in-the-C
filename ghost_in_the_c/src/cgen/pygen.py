@@ -9,11 +9,12 @@ load_dotenv()
 class problem(BaseModel):
     main_p: str
     hints: list[str]
+    unit_tests: list[str]
 
 client = genai.Client(api_key=os.getenv("API_KEY"))
 response = client.models.generate_content(
     model="gemini-2.0-flash",
-    contents="give me a problem to solve in c and some hints",
+    contents="give me a problem to solve in c, some hints and some unit tests in the form of input/output pairs ",
     config={
         "response_mime_type": "application/json",
         "response_schema": list[problem],
