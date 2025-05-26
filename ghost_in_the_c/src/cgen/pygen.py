@@ -14,7 +14,7 @@ class problem(BaseModel):
 client = genai.Client(api_key=os.getenv("API_KEY"))
 response = client.models.generate_content(
     model="gemini-2.0-flash",
-    contents="give me a problem to solve in c, some hints and some unit tests in the form of input/output pairs ",
+    contents="give me a problem to solve in c, some hints and some unit tests in the form of input/output pairs with each pair being a json format string",
     config={
         "response_mime_type": "application/json",
         "response_schema": list[problem],

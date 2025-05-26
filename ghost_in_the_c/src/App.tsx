@@ -1,16 +1,19 @@
+// App.tsx
 import { useState } from 'react';
 import './App.css';
 
 function App() {
   const [pythonOutput, setPythonOutput] = useState<string | null>(null);
   const [hints, setHints] = useState<string[] | null>(null);
-  const [unitTests, setUnitTests] = useState<string[] | null>(null); // New state for unit tests
+  const [unitTests, setUnitTests] = useState<string[] | null>(null);
   const [showHints, setShowHints] = useState<boolean>(false);
-  const [showUnitTests, setShowUnitTests] = useState<boolean>(false); // Fixed typo here
+  const [showUnitTests, setShowUnitTests] = useState<boolean>(false);
   const [input, setInput] = useState<string>("");
+  const [testResults, setTestResults] = useState<string | null>(null);
 
   const executePython = async () => {
     try {
+      // <--- CHANGED THIS URL TO PORT 5172
       const response = await fetch('http://localhost:5000/execute-python', {
         method: 'POST',
         headers: {
@@ -24,7 +27,6 @@ function App() {
       if (response.ok) {
         let parsedProblemData: any = data.result;
 
-        // Attempt to parse if it's a string
         if (typeof parsedProblemData === 'string') {
           try {
             parsedProblemData = JSON.parse(parsedProblemData);
@@ -34,7 +36,7 @@ function App() {
             setUnitTests(null);
             setShowHints(false);
             setShowUnitTests(false);
-            return; // Exit if parsing fails
+            return;
           }
         }
 
@@ -42,7 +44,6 @@ function App() {
         let problemHints: string[] = [];
         let problemUnitTests: string[] = [];
 
-        // Determine the actual problem object
         let actualProblemObject: any = null;
         if (Array.isArray(parsedProblemData) && parsedProblemData.length > 0) {
           actualProblemObject = parsedProblemData[0];
@@ -69,12 +70,12 @@ function App() {
           return;
         }
 
-        // Set all states after successful extraction
         setPythonOutput(mainProblemText);
-        setHints(problemHints); // Will be [] if no hints or not an array
-        setUnitTests(problemUnitTests); // Will be [] if no unit tests or not an array
+        setHints(problemHints);
+        setUnitTests(problemUnitTests);
         setShowHints(false);
         setShowUnitTests(false);
+        setTestResults(null);
 
       } else {
         setPythonOutput(data.error);
@@ -82,6 +83,7 @@ function App() {
         setUnitTests(null);
         setShowHints(false);
         setShowUnitTests(false);
+        setTestResults(null);
       }
     } catch (error) {
       console.error('Error executing Python script:', error);
@@ -90,6 +92,37 @@ function App() {
       setUnitTests(null);
       setShowHints(false);
       setShowUnitTests(false);
+      setTestResults(null);
+    }
+  };
+
+  const runTests = async () => {
+    if (!unitTests || unitTests.length === 0) {
+      setTestResults("No unit tests available to run.");
+      return;
+    }
+
+    try {
+      setTestResults("Running tests...");
+      // <--- CHANGED THIS URL TO PORT 5172
+      const response = await fetch('http://localhost:5172/run-tests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ unitTests: unitTests }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setTestResults(data.message);
+      } else {
+        setTestResults(`Error running tests: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error running tests:', error);
+      setTestResults('An error occurred while trying to run tests.');
     }
   };
 
@@ -102,7 +135,6 @@ function App() {
   };
 
   const displayHints = () => {
-    // If hints is an empty array, it will correctly show "No hints available."
     if (showHints && hints !== null) {
       if (hints.length > 0) {
         return (
@@ -123,7 +155,6 @@ function App() {
   };
 
   const displayUnitTests = () => {
-    // If unitTests is an empty array, it will correctly show "No unit tests available."
     if (showUnitTests && unitTests !== null) {
       if (unitTests.length > 0) {
         return (
@@ -149,11 +180,12 @@ function App() {
         <h1>Ghost In The C</h1>
         <button onClick={executePython}>Give me a problem</button>
         {pythonOutput && <p>Problem: {pythonOutput}</p>}
-        {/* Buttons now appear if hints/unitTests are not null (meaning they were attempted to be extracted) */}
         {hints !== null && <button onClick={toggleHints}>Show Hints</button>}
         {unitTests !== null && <button onClick={toggleUnitTests}>Show Unit Tests</button>}
+        {unitTests !== null && unitTests.length > 0 && <button onClick={runTests}>Test My Code</button>}
         {displayHints()}
         {displayUnitTests()}
+        {testResults && <p><strong>Test Results:</strong> {testResults}</p>}
       </div>
       <div className='terminal-div'>
         <iframe

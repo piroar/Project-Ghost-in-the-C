@@ -33,7 +33,5 @@ EXPOSE 5000
 
 RUN python3 pygen.py
 
-RUN ls -l
-
 # Command to run the server, with explicit virtual environment activation
 CMD [ "bash", "-c", "source /app/venv/bin/activate && node server.cjs" ]

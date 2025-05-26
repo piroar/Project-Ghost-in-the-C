@@ -8,6 +8,8 @@ services:
      - "4200:4200"
     networks:
       - app-network
+    volumes:
+      - user_programs:/home/shelluser
   web:
     build: .
     ports:
@@ -27,6 +29,19 @@ services:
      - "5000:5000"
     networks:
      - app-network
+  check:
+    build:
+      context: .
+      dockerfile: check.Dockerfile
+    ports:
+      - "5172:5172"
+    networks:
+      - app-network
+    volumes:
+      - user_programs:/app/user_programs
+volumes:
+  user_programs:
+    name: user_programs
 networks:
   app-network:
     driver: bridge
