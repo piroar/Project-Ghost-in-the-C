@@ -1,4 +1,4 @@
-
+import sys
 import uvicorn
 from google import genai
 from pydantic import BaseModel, Field
@@ -17,7 +17,7 @@ class UnitTest(BaseModel):
 
 
 class Problem(BaseModel):
-    description: Annotated[str, Field(description="A description of a problem to solve in C for students.")]
+    description: Annotated[str, Field(description="A description of a problem to solve in for students.")]
     hints: Annotated[list[str], Field(description="Hints to help solve the problem.")]
     unit_tests: Annotated[list[UnitTest], Field(description="A list of unit tests to validate the solution. Each test is a pair of input arguments and expected output.")]
 
@@ -28,10 +28,11 @@ app = FastAPI()
 
 
 @app.get("/problem")
-def get_problem():
+async def get_problem(prompt: str = "Provide me with a problem to solve in C following the format of the Problem model."):
+
     response = client.models.generate_content(
         model="gemini-2.0-flash",
-        contents="give me a problem to solve in c, some hints and some unit tests in the form of input/output pairs with each pair being a json format string",
+        contents=prompt,
         config={
             "response_mime_type": "application/json",
             "response_schema": Problem,
@@ -41,4 +42,6 @@ def get_problem():
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "--init":
+        sys.exit(0)
     uvicorn.run(app, port=5000)
