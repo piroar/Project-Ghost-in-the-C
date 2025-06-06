@@ -32,3 +32,22 @@ deactivate
 2) docker based όλο
 3) unit tests και structured outputs
 (check highlight.js)
+
+```mermaid
+graph LR
+    User --|port 5173|--> Frontend
+
+    Frontend --|port 4200|--> SIB(Shell in a Box)
+
+    Frontend --|port 5000|--> API(Challenge Generation API)
+
+    Frontend --|port 5172|--> Checker
+
+```
+
+* Final goal:
+  * All services should be offered over HTTP through a single port (ideally 80)
+  * Each component has a separate folder + codebase
+    * `web` folder contains frontend.
+    * `api` folder contains API.
+    * `shell` folder contains shell-in-a-box setup (if needed).
