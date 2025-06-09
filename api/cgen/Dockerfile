@@ -5,16 +5,16 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy package.json and package-lock.json (if available) to the working directory
-COPY package*.json ./
+COPY web/package*.json ./
 
 # Install Node.js dependencies
 RUN npm install
 
 # Copy the server code and the python script
-COPY src/cgen/server.cjs ./
-COPY src/cgen/pygen.py ./
-COPY src/cgen/.env ./
-COPY requirements.txt ./
+COPY api/cgen/server.cjs ./
+COPY api/cgen/pygen.py ./
+COPY api/cgen/.env ./
+COPY api/cgen/requirements.txt ./
 
 # Install Python and any necessary Python dependencies
 RUN apk add --no-cache python3 py3-pip bash # Add bash to the image

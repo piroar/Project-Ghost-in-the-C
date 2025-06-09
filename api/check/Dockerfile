@@ -8,13 +8,13 @@ RUN apk update && apk add --no-cache build-base \
 WORKDIR /app
 
 # Copy package.json and package-lock.json first.
-COPY package*.json ./
+COPY web/package*.json ./
 
 # Install Node.js dependencies.
 RUN npm install
 
 # Copy the server code and the python script
-COPY src/check/jcheck.cjs .
+COPY api/check/jcheck.cjs .
 
 # Expose the port that the server is listening on
 EXPOSE 5172

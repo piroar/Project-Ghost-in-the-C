@@ -2,11 +2,17 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY web/package.json ./
+
+COPY web/package-lock.json ./
 
 RUN npm install
 
-COPY . .
+COPY web ./
+
+RUN ls -l
+
+RUN pwd
 
 EXPOSE 5173
 
