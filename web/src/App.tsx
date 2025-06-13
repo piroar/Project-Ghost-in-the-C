@@ -1,98 +1,63 @@
 // App.tsx
 import { useState } from 'react';
-import './App.css';
+import './App.css'; // Removed this line as Tailwind CSS is used for styling
+
+// Define the interfaces for the data received from the backend
+interface UnitTest {
+  args: string[];
+  output: string;
+  exit_code: number;
+}
+
+interface Problem {
+  description: string;
+  hints: string[];
+  unit_tests: UnitTest[];
+}
 
 function App() {
-  const [pythonOutput, setPythonOutput] = useState<string | null>(null);
+  const [problemDescription, setProblemDescription] = useState<string | null>(null);
   const [hints, setHints] = useState<string[] | null>(null);
-  const [unitTests, setUnitTests] = useState<string[] | null>(null);
+  const [unitTests, setUnitTests] = useState<UnitTest[] | null>(null); // Use UnitTest interface
   const [showHints, setShowHints] = useState<boolean>(false);
   const [showUnitTests, setShowUnitTests] = useState<boolean>(false);
-  const [input, setInput] = useState<string>("");
   const [testResults, setTestResults] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false); // State for loading indicator
+  const [error, setError] = useState<string | null>(null); // State for error messages
+  const [testing, setTesting] = useState<boolean>(false); // State for testing indicator
 
-  const executePython = async () => {
+  const fetchProblem = async () => {
+    setLoading(true); // Set loading to true when fetching starts
+    setError(null); // Clear previous errors
+    setProblemDescription(null);
+    setHints(null);
+    setUnitTests(null);
+    setShowHints(false);
+    setShowUnitTests(false);
+    setTestResults(null);
+
     try {
-      // <--- CHANGED THIS URL TO PORT 5172
-      const response = await fetch('http://localhost:5000/execute-python', {
-        method: 'POST',
+      const response = await fetch('http://localhost:5000/', {
+        method: 'GET', 
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ input: input }),
       });
 
-      const data = await response.json();
+      const data: Problem = await response.json(); 
 
       if (response.ok) {
-        let parsedProblemData: any = data.result;
-
-        if (typeof parsedProblemData === 'string') {
-          try {
-            parsedProblemData = JSON.parse(parsedProblemData);
-          } catch (e) {
-            setPythonOutput(`Error parsing string: ${e}`);
-            setHints(null);
-            setUnitTests(null);
-            setShowHints(false);
-            setShowUnitTests(false);
-            return;
-          }
-        }
-
-        let mainProblemText = "";
-        let problemHints: string[] = [];
-        let problemUnitTests: string[] = [];
-
-        let actualProblemObject: any = null;
-        if (Array.isArray(parsedProblemData) && parsedProblemData.length > 0) {
-          actualProblemObject = parsedProblemData[0];
-        } else if (typeof parsedProblemData === 'object' && parsedProblemData !== null) {
-          actualProblemObject = parsedProblemData;
-        }
-
-        if (actualProblemObject && typeof actualProblemObject === 'object') {
-          if (actualProblemObject.hasOwnProperty('main_p')) {
-            mainProblemText = actualProblemObject.main_p;
-          }
-          if (actualProblemObject.hasOwnProperty('hints') && Array.isArray(actualProblemObject.hints)) {
-            problemHints = actualProblemObject.hints;
-          }
-          if (actualProblemObject.hasOwnProperty('unit_tests') && Array.isArray(actualProblemObject.unit_tests)) {
-            problemUnitTests = actualProblemObject.unit_tests;
-          }
-        } else {
-          setPythonOutput("Invalid problem data format.");
-          setHints(null);
-          setUnitTests(null);
-          setShowHints(false);
-          setShowUnitTests(false);
-          return;
-        }
-
-        setPythonOutput(mainProblemText);
-        setHints(problemHints);
-        setUnitTests(problemUnitTests);
-        setShowHints(false);
-        setShowUnitTests(false);
-        setTestResults(null);
-
+        setProblemDescription(data.description);
+        setHints(data.hints);
+        setUnitTests(data.unit_tests);
       } else {
-        setPythonOutput(data.error);
-        setHints(null);
-        setUnitTests(null);
-        setShowHints(false);
-        setShowUnitTests(false);
-        setTestResults(null);
+        setError(`Failed to fetch problem: ${JSON.stringify(data)}`);
       }
-    } catch (error) {
-      console.error('Error executing Python script:', error);
-      setPythonOutput('An error occurred.');
-      setHints(null);
-      setUnitTests(null);
-      setShowHints(false);
-      setShowUnitTests(false);
-      setTestResults(null);
+    } catch (err) {
+      console.error('Error fetching problem:', err);
+      setError('An error occurred while trying to fetch a problem. Please ensure the backend server is running and accessible.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -102,15 +67,19 @@ function App() {
       return;
     }
 
+    setTesting(true); 
+    setTestResults("Running tests..."); 
+    setError(null); 
+
     try {
-      setTestResults("Running tests...");
-      // <--- CHANGED THIS URL TO PORT 5172
+      const unitTestsAsJsonStrings = unitTests.map(test => JSON.stringify(test));
+
       const response = await fetch('http://localhost:5172/run-tests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ unitTests: unitTests }),
+        body: JSON.stringify({ unitTests: unitTestsAsJsonStrings }), 
       });
 
       const data = await response.json();
@@ -118,11 +87,15 @@ function App() {
       if (response.ok) {
         setTestResults(data.message);
       } else {
-        setTestResults(`Error running tests: ${data.error}`);
+        setError(`Error running tests: ${data.error || JSON.stringify(data)}`);
+        setTestResults(null); 
       }
     } catch (error) {
       console.error('Error running tests:', error);
-      setTestResults('An error occurred while trying to run tests.');
+      setError('An error occurred while trying to run tests. Please ensure the C test runner backend is running on port 5172.');
+      setTestResults(null); 
+    } finally {
+      setTesting(false); 
     }
   };
 
@@ -162,9 +135,14 @@ function App() {
             <h3>Unit Tests:</h3>
             <ul>
               {unitTests.map((test, index) => (
-                <li key={index}>{test}</li>
+                <li key={index}>
+                  Args: <code>{JSON.stringify(test.args)}</code>, Expected Output: <code>"{test.output}"</code>, Expected Exit Code: <code>{test.exit_code}</code>
+                </li>
               ))}
             </ul>
+            <p>
+              These tests will be sent to the backend service for compilation and execution.
+            </p>
           </div>
         );
       } else {
@@ -175,27 +153,75 @@ function App() {
   };
 
   return (
-    <>
+    <div>
       <div>
         <h1>Ghost In The C</h1>
-        <button onClick={executePython}>Give me a problem</button>
-        {pythonOutput && <p>Problem: {pythonOutput}</p>}
-        {hints !== null && <button onClick={toggleHints}>Show Hints</button>}
-        {unitTests !== null && <button onClick={toggleUnitTests}>Show Unit Tests</button>}
-        {unitTests !== null && unitTests.length > 0 && <button onClick={runTests}>Test My Code</button>}
+
+        <button
+          onClick={fetchProblem}
+          disabled={loading}
+        >
+          {loading ? 'Fetching Problem...' : 'Give me a problem'}
+        </button>
+
+        {error && (
+          <div>
+            <p>{error}</p>
+          </div>
+        )}
+
+        {problemDescription && (
+          <div>
+            <h2>Problem:</h2>
+            <p>{problemDescription}</p>
+          </div>
+        )}
+
+        <div>
+          {hints !== null && hints.length > 0 && (
+            <button
+              onClick={toggleHints}
+            >
+              {showHints ? 'Hide Hints' : 'Show Hints'}
+            </button>
+          )}
+          {unitTests !== null && unitTests.length > 0 && (
+            <button
+              onClick={toggleUnitTests}
+            >
+              {showUnitTests ? 'Hide Unit Tests' : 'Show Unit Tests'}
+            </button>
+          )}
+          {/* Re-enabled and updated 'Test My Code' button */}
+          {unitTests !== null && unitTests.length > 0 && (
+            <button
+              onClick={runTests}
+              disabled={testing} // Disable button while testing
+            >
+              {testing ? 'Running Tests...' : 'Test My Code'}
+            </button>
+          )}
+        </div>
+
         {displayHints()}
         {displayUnitTests()}
-        {testResults && <p><strong>Test Results:</strong> {testResults}</p>}
+
+        {testResults && (
+          <p>
+            <strong>Test Results:</strong> {testResults}
+          </p>
+        )}
       </div>
-      <div className='terminal-div'>
+
+      <div>
         <iframe
           src='http://localhost:4200/'
           title='the ghost'
-          className='terminal'
+          className='terminal w-full h-80 border-none'
         >
         </iframe>
       </div>
-    </>
+    </div>
   );
 }
 

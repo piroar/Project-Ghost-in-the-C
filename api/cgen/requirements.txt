@@ -1,3 +1,6 @@
 google-genai
 python-dotenv
 pydantic
+fastapi
+uvicorn
+typing-extensions
