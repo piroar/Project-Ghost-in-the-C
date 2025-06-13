@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import './App.css'; // Removed this line as Tailwind CSS is used for styling
 
-// Define the interfaces for the data received from the backend
 interface UnitTest {
   args: string[];
   output: string;
@@ -18,17 +17,17 @@ interface Problem {
 function App() {
   const [problemDescription, setProblemDescription] = useState<string | null>(null);
   const [hints, setHints] = useState<string[] | null>(null);
-  const [unitTests, setUnitTests] = useState<UnitTest[] | null>(null); // Use UnitTest interface
+  const [unitTests, setUnitTests] = useState<UnitTest[] | null>(null);
   const [showHints, setShowHints] = useState<boolean>(false);
   const [showUnitTests, setShowUnitTests] = useState<boolean>(false);
   const [testResults, setTestResults] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false); // State for loading indicator
-  const [error, setError] = useState<string | null>(null); // State for error messages
-  const [testing, setTesting] = useState<boolean>(false); // State for testing indicator
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [testing, setTesting] = useState<boolean>(false);
 
   const fetchProblem = async () => {
-    setLoading(true); // Set loading to true when fetching starts
-    setError(null); // Clear previous errors
+    setLoading(true);
+    setError(null);
     setProblemDescription(null);
     setHints(null);
     setUnitTests(null);
@@ -192,11 +191,11 @@ function App() {
               {showUnitTests ? 'Hide Unit Tests' : 'Show Unit Tests'}
             </button>
           )}
-          {/* Re-enabled and updated 'Test My Code' button */}
+          {}
           {unitTests !== null && unitTests.length > 0 && (
             <button
               onClick={runTests}
-              disabled={testing} // Disable button while testing
+              disabled={testing}
             >
               {testing ? 'Running Tests...' : 'Test My Code'}
             </button>
