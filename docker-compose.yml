@@ -1,46 +1,56 @@
 version: '3.8'
 services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - "80:80" 
+    networks:
+      - app-network
+    depends_on:
+      - web
+      - server
+      - check
+      - shellinabox
+
   shellinabox:
     build:
       context: .
-      dockerfile: shell/Dockerfile
-    ports:
-     - "4200:4200"
+      dockerfile: shell/Dockerfile 
     networks:
       - app-network
     volumes:
       - user_programs:/home/shelluser
+
   web:
-    build: 
+    build:
       context: .
       dockerfile: web/Dockerfile
-    ports:
-      - "5173:5173"
+    networks:
+      - app-network
     volumes:
       - ./web:/app
       - /app/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
-    networks:
-      - app-network
+
   server:
     build:
       context: .
       dockerfile: api/cgen/Dockerfile
-    ports:
-     - "5000:5000"
     networks:
-     - app-network
+      - app-network
+
   check:
     build:
       context: .
       dockerfile: api/check/Dockerfile
-    ports:
-      - "5172:5172"
     networks:
       - app-network
     volumes:
       - user_programs:/app/user_programs
+
 volumes:
   user_programs:
     name: user_programs

@@ -2,10 +2,10 @@ import os
 import subprocess
 import json
 from flask import Flask, request, jsonify
-from flask_cors import CORS 
+from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/run-tests": {"origins": "http://localhost:5173"}})
+CORS(app, resources={r"/run-tests": {"origins": "*"}})
 
 class UnitTest:
     def __init__(self, args, output, exit_code):
@@ -20,15 +20,16 @@ def find_c_files(base_path):
             c_files.append(os.path.join(root, 'main.c'))
     return c_files
 
+
 @app.route('/run-tests', methods=['POST'])
 def run_tests():
     """
     Receives unit tests from the frontend, compiles and executes C programs
-    found in subdirectories, and returns the test results.
+    found in subdirectories within the mounted volume, and returns the test results.
     """
     data = request.get_json()
     unit_tests_json_strings = data.get('unitTests', [])
-    
+
     if not unit_tests_json_strings:
         return jsonify({"error": "No unit tests provided."}), 400
 
@@ -47,20 +48,20 @@ def run_tests():
             return jsonify({"error": "Invalid unit test JSON format."}), 400
 
     results = []
-    current_directory = os.path.dirname(os.path.abspath(__file__))
-    
-    c_source_files = find_c_files(current_directory)
+    user_programs_base_path = '/app/user_programs'
+
+    c_source_files = find_c_files(user_programs_base_path)
 
     if not c_source_files:
-        return jsonify({"message": "No C programs (main.c) found in subdirectories to test."}), 200
+        return jsonify({"message": "No C programs (main.c) found in subdirectories within user_programs volume to test."}), 200
 
     for c_file_path in c_source_files:
         c_dir = os.path.dirname(c_file_path)
         executable_path = os.path.join(c_dir, 'a.out')
-        program_name = os.path.basename(c_dir)
+        program_name = os.path.basename(c_dir) 
 
         compile_command = ['gcc', c_file_path, '-o', executable_path]
-        
+
         try:
             compile_process = subprocess.run(
                 compile_command,
@@ -73,9 +74,9 @@ def run_tests():
 
         except subprocess.CalledProcessError as e:
             results.append(f"Program '{program_name}' (Path: {c_file_path}) FAILED TO COMPILE. Error: {e.stderr.strip()}")
-            continue 
+            continue
         except FileNotFoundError:
-            results.append(f"Program '{program_name}' (Path: {c_file_path}) FAILED TO COMPILE. '/usr/bin/gcc' command not found. Ensure build-essential is installed and PATH is correct.")
+            results.append(f"Program '{program_name}' (Path: {c_file_path}) FAILED TO COMPILE. 'gcc' command not found. Ensure build-essential is installed and PATH is correct.")
             continue
         except Exception as e:
             results.append(f"Program '{program_name}' (Path: {c_file_path}) FAILED TO COMPILE due to an unexpected error: {e}")
@@ -84,13 +85,13 @@ def run_tests():
         program_tests_passed = True
         for i, test in enumerate(unit_tests):
             execute_command = [executable_path] + test.args
-            
+
             try:
                 execute_process = subprocess.run(
                     execute_command,
                     capture_output=True,
                     text=True,
-                    timeout=5 
+                    timeout=5
                 )
 
                 actual_output = execute_process.stdout.strip()
@@ -126,21 +127,21 @@ def run_tests():
             except Exception as e:
                 program_tests_passed = False
                 results.append(f"Program '{program_name}' - Test {i+1} FAILED due to an unexpected error during execution: {e}")
-        
+
         if os.path.exists(executable_path):
             try:
                 os.remove(executable_path)
                 results.append(f"Cleaned up executable for '{program_name}'.")
             except OSError as e:
                 results.append(f"Could not remove executable for '{program_name}': {e}")
-    
+
     if not results:
         final_message = "No C programs found or no tests were run."
     elif all("PASSED" in r for r in results) and all("FAILED" not in r for r in results):
         final_message = "All found C programs passed all unit tests!"
     else:
         final_message = "Some C programs failed unit tests."
-    
+
     return jsonify({"message": "\n".join(results), "summary": final_message}), 200
 
 if __name__ == '__main__':

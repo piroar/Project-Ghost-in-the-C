@@ -1,6 +1,6 @@
 // App.tsx
 import { useState } from 'react';
-import './App.css'; // Removed this line as Tailwind CSS is used for styling
+import './App.css';
 
 interface UnitTest {
   args: string[];
@@ -36,14 +36,14 @@ function App() {
     setTestResults(null);
 
     try {
-      const response = await fetch('http://localhost:5000/', {
-        method: 'GET', 
+      const response = await fetch('/api/cgen/', {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
 
-      const data: Problem = await response.json(); 
+      const data: Problem = await response.json();
 
       if (response.ok) {
         setProblemDescription(data.description);
@@ -66,19 +66,19 @@ function App() {
       return;
     }
 
-    setTesting(true); 
-    setTestResults("Running tests..."); 
-    setError(null); 
+    setTesting(true);
+    setTestResults("Running tests...");
+    setError(null);
 
     try {
       const unitTestsAsJsonStrings = unitTests.map(test => JSON.stringify(test));
 
-      const response = await fetch('http://localhost:5172/run-tests', {
+      const response = await fetch('/api/check/run-tests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ unitTests: unitTestsAsJsonStrings }), 
+        body: JSON.stringify({ unitTests: unitTestsAsJsonStrings }),
       });
 
       const data = await response.json();
@@ -87,14 +87,14 @@ function App() {
         setTestResults(data.message);
       } else {
         setError(`Error running tests: ${data.error || JSON.stringify(data)}`);
-        setTestResults(null); 
+        setTestResults(null);
       }
     } catch (error) {
       console.error('Error running tests:', error);
-      setError('An error occurred while trying to run tests. Please ensure the C test runner backend is running on port 5172.');
-      setTestResults(null); 
+      setError('An error occurred while trying to run tests. Please ensure the C test runner backend is running.');
+      setTestResults(null);
     } finally {
-      setTesting(false); 
+      setTesting(false);
     }
   };
 
@@ -213,8 +213,9 @@ function App() {
       </div>
 
       <div>
+        {}
         <iframe
-          src='http://localhost:4200/'
+          src='/terminal/'
           title='the ghost'
           className='terminal w-full h-80 border-none'
         >

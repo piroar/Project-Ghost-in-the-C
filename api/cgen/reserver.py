@@ -27,7 +27,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -52,5 +52,4 @@ async def get_problem(prompt: str = "Provide me with a problem to solve in C fol
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "--init":
         sys.exit(0)
-    uvicorn.run(app, port=5000)
-
+    uvicorn.run(app, host="0.0.0.0", port=5000) 
