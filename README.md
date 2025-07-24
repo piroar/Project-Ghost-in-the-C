@@ -1,53 +1,11 @@
-# Project-Ghost-in-the-C
+#Ghost In The C
+It's a webapp that generates an exercise with the help of a LLM and gives the user a terminal to solve along with some hints and unit tests. When the user finishes he can ask for his solution to be checked through these unit tests.
 
-Κύριο Πρόβλημα: Κάθε μέρα να εκχωρείται ένας γρίφος μέσω LLM στην ιστοσελίδα, τον οποίο να πρέπει να επιλύσει ο χρήστης
-3 Μεγάλα Υποπροβλήματα:
-1.Επικοινωνία με LLM και εισαγωγή γρίφου κάθε μέρα
-2.Παροχή δυνατότητας επίλυσης του γρίφου στον χρήστη μέσω κάποιου terminal και έλεγχος της λύσης
-3.Εμφάνιση (background, ευχηρστία)
+It consists of 5 services:
+Web-The frontend of the website 
+cgen-The generator of the exercises
+check-The tester of the solution 
+shellinabox-An embedded web shell
+nginx-The proxy of the entire webapp
 
-Ανάλυση Υποπροβλήματος 1.:
-1.1:Επικοινωνία με LLM
-1.2:Έλεγχος ώρας  και επανάληψη του 1.1 μετά από ένα προκαθορισμένο χρονικό διάστημα(24 ώρες)
-
-Ανάλυση Υποπροβλήματος 2.:
-2.1:Παροχή terminal για την επίλυση του γρίφου
-2.2:Έλεγχος της λύσης
-
-
-site:
-npm run dev
-
-docker shell:
-sudo docker run -p 4200:4200 shellinabox
-shelluser:password
-
-server:
-source env/bin/activate
-node server.cjs(ανοίγει το venv με τα dependencies)
-deactivate
-
-Απαιτήσεις:
-1) architecture diagram
-2) docker based όλο
-3) unit tests και structured outputs
-(check highlight.js)
-
-```mermaid
-graph LR
-    User --|port 5173|--> Frontend
-
-    Frontend --|port 4200|--> SIB(Shell in a Box)
-
-    Frontend --|port 5000|--> API(Challenge Generation API)
-
-    Frontend --|port 5172|--> Checker
-
-```
-
-* Final goal:
-  * All services should be offered over HTTP through a single port (ideally 80)
-  * Each component has a separate folder + codebase
-    * `web` folder contains frontend.
-    * `api` folder contains API.
-    * `shell` folder contains shell-in-a-box setup (if needed).
+The webapp runs on http://100.27.217.193 
