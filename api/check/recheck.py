@@ -60,7 +60,7 @@ def run_tests():
         executable_path = os.path.join(c_dir, 'a.out')
         program_name = os.path.basename(c_dir) 
 
-        compile_command = ['gcc', c_file_path, '-o', executable_path]
+        compile_command = ['gcc', c_file_path, '-o', executable_path, '-lm']
 
         try:
             compile_process = subprocess.run(
