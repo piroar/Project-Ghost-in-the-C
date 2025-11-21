@@ -15,7 +15,7 @@ shellinabox-An embedded web shell.
 nginx-The proxy of the entire webapp.
 
 The webapp runs on http://100.27.217.193 
-
+## Setup
 In order to execute it locally, you need your own gemini api key (which you can obtain by this site https://aistudio.google.com/app/api-keys).
 You must copy the key to the .env file (Project-Ghost-in-the-C/api/cgen/.env). The contents of the file after you copy it should be:
 API_KEY = 1234...
@@ -30,3 +30,12 @@ The website will be on http://localhost
 
 And when you finish you run:
 sudo docker-compose down
+
+## How to use
+Press the "Give me a problem button".
+
+Then proceed to create a file named main.c where you will write your solution by executing the command "nano main.c".
+
+Remember to press "Show Hints" if you want some tips and "Show Unit Tests" to see the expected output for each expected input". Be warned that the test is super strict and needs the specific output that is listed.
+
+When you finish press "Test My Code" to see the results.
