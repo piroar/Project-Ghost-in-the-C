@@ -15,3 +15,18 @@ shellinabox-An embedded web shell.
 nginx-The proxy of the entire webapp.
 
 The webapp runs on http://100.27.217.193 
+
+In order to execute it locally, you need your own gemini api key (which you can obtain by this site https://aistudio.google.com/app/api-keys).
+You must copy the key to the .env file (Project-Ghost-in-the-C/api/cgen/.env). The contents of the file after you copy it should be:
+API_KEY = 1234...
+
+After that you execute the following command to build the project(from the home directory):
+sudo docker-compose build
+
+Each time you want to create a new session, you use:
+sudo docker-compose up
+
+The website will be on http://localhost
+
+And when you finish you run:
+sudo docker-compose down
