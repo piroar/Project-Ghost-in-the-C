@@ -1,41 +1,24 @@
 # Ghost In The C
 
-It's a webapp that generates an exercise with the help of a LLM and gives the user a terminal to solve it along with some hints and unit tests. When the user finishes he can ask for his solution to be checked through these unit tests.
+## Overview
 
-It consists of 5 services:
+Ghost In The C is an interactive, web-based educational platform designed to help users practice C programming. It leverages a Large Language Model (LLM) to dynamically generate unique C programming exercises and provides an integrated, real-time terminal environment for users to develop and test their solutions.
 
-Web-The frontend of the websi0te. Implemented with Typescript, Css.
+The public deployment of the application is available at: http://100.27.217.193
 
-cgen-The generator of the exercises. Implemented with Python, Uvicorn, FastApi, Google-genai.
-
-check-The tester of the solution. Implemented with Python, Flask.
-
-shellinabox-An embedded web shell.
-
-nginx-The proxy of the entire webapp.
-
-The webapp runs on http://100.27.217.193 
-## Setup
-In order to execute it locally, you need your own gemini api key (which you can obtain by this site https://aistudio.google.com/app/api-keys).
-You must copy the key to the .env file (Project-Ghost-in-the-C/api/cgen/.env). The contents of the file after you copy it should be:
-API_KEY = 1234...
-
-After that you execute the following command to build the project(from the home directory):
-sudo docker-compose build
-
-Each time you want to create a new session, you use:
-sudo docker-compose up
-
-The website will be on http://localhost
-
-And when you finish you run:
-sudo docker-compose down
-
+## Local Setup Guide
+1. Make sure you have docker and docker-compose installed on your pc.
+2. Obtain your personal Gemini API Key from the [Google AI studio](https://aistudio.google.com/app/api-keys).
+3. Download the repository.
+4. Navigate to the generator service directory: Project-Ghost-in-the-C/api/cgen/.
+5. Copy your API Key into the .env file (Example: API_KEY = 1234...).
+6. From the project's root directory execute the following command to build the Docker images for all services: ```sudo docker-compose build```
 ## How to use
-Press the "Give me a problem button".
-
-Then proceed to create a file named main.c where you will write your solution by executing the command "nano main.c".
-
-Remember to press "Show Hints" if you want some tips and "Show Unit Tests" to see the expected output for each expected input". Be warned that the test is super strict and needs the specific output that is listed.
-
-When you finish press "Test My Code" to see the results.
+1. Execute the following command to create a new session: ```sudo docker-compose up```.
+2. Visit the site at [localhost](http://localhost).
+3. Click the "Give me a problem" button to receive a C programming exercise.
+4. Create a file named main.c where you will write your solution by executing the command: ```nano main.c```.
+5. Use the "Show Hints" button for tips on solving the problem  
+6. Use the "Show Unit Tests" to view the expected input and the exact corresponding output for each test case.
+7. Once your solution is complete, click "Test My Code" to validate your "main.c" file against the unit tests.
+8. Close your session with ```sudo docker-compose down```.
