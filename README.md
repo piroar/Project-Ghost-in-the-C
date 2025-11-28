@@ -7,7 +7,7 @@ Ghost In The C is an interactive, web-based educational platform designed to hel
 The public deployment of the application is available at: http://100.27.217.193
 
 ## Local Setup Guide
-1. Make sure you have docker installed on your pc.
+1. Make sure you have [docker](https://www.docker.com/products/docker-desktop/) installed on your pc.
 2. Obtain your personal Gemini API Key from the [Google AI studio](https://aistudio.google.com/app/api-keys).
 3. Download the repository.
 4. Navigate to the generator service directory: Project-Ghost-in-the-C/api/cgen/.
@@ -29,5 +29,6 @@ The public deployment of the application is available at: http://100.27.217.193
 2. vim (command: vim main.c)
 3. micro (command: micro main.c)
 4. emacs (command: emacs main.c)
+
 
 
