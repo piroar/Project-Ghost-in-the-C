@@ -17,7 +17,9 @@ The public deployment of the application is available at: http://100.27.217.193
 1. Execute the following command to create a new session: ![docker compose up](https://github.com/piroar/Project-Ghost-in-the-C/blob/main/assets/docker_compose_up.png)
 2. Visit the site at [localhost](http://localhost). If it got installed successfully, it should look like this: ![homepage](https://github.com/piroar/Project-Ghost-in-the-C/blob/main/assets/homepage.png)
 3. Click the "Give me a problem" button to receive a C programming exercise.
-4. Create a file named main.c where you will write your solution, with an editor of your choice (all the available editors are listed below). The command to use each of them to edit the file "main.c" is: ```"NAME_OF_THE_SELECTED_EDITOR" main.c```.
+4. Create a file named main.c where you will write your solution, with an editor of your choice (all the available editors are listed below). The command to use each of them to edit the file "main.c" is: ```"NAME_OF_THE_SELECTED_EDITOR" main.c```. ![micro command](https://github.com/piroar/Project-Ghost-in-the-C/blob/main/assets/micro_main.png)
+
+This is an example that creates and edits the "main.c" file with the "micro" editor. ![micro](https://github.com/piroar/Project-Ghost-in-the-C/blob/main/assets/micro.png) 
 5. Use the "Show Hints" button for tips on solving the problem  
 6. Use the "Show Unit Tests" to view the expected input and the exact corresponding output for each test case.
 7. Once your solution is complete, click "Test My Code" to validate your "main.c" file against the unit tests. If all tests passed, this will be displayed: ![all tests passed](https://github.com/piroar/Project-Ghost-in-the-C/blob/main/assets/all_tests_passed.png)
@@ -29,6 +31,7 @@ The public deployment of the application is available at: http://100.27.217.193
 2. vim (command: vim main.c)
 3. micro (command: micro main.c)
 4. emacs (command: emacs main.c)
+
 
 
 
