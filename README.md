@@ -6,6 +6,11 @@ Ghost In The C is an interactive, web-based educational platform designed to hel
 
 The public deployment of the application is available at: http://100.27.217.193
 
+## Prerequisites
+In order to efficiently use Ghost in the C, you should have introductory level knowledge at the programming language <<C>>. 
+
+Everything needed in terms of both advanced knowledge (like specific functions or libraries) and linux commands are mentioned at the hints of the exercise, the "Local Setup" and  the"How to use" guides.
+
 ## Local Setup Guide
 1. Make sure you have [docker](https://www.docker.com/products/docker-desktop/) installed on your pc.
 2. Obtain your personal Gemini API Key from the [Google AI studio](https://aistudio.google.com/app/api-keys).
@@ -13,6 +18,7 @@ The public deployment of the application is available at: http://100.27.217.193
 4. Navigate to the generator service directory: Project-Ghost-in-the-C/api/cgen/.
 5. Copy your API Key into the .env file (agter you copy the key, it should be like the image below). ![Api key](https://github.com/piroar/Project-Ghost-in-the-C/blob/main/assets/env.png)
 6. From the project's root directory execute the following command to build the whole project: ![docker compose build](https://github.com/piroar/Project-Ghost-in-the-C/blob/main/assets/docker_compose_build.png)
+
 ## How to use
 1. Execute the following command to create a new session: ![docker compose up](https://github.com/piroar/Project-Ghost-in-the-C/blob/main/assets/docker_compose_up.png)
 2. Visit the site at [localhost](http://localhost). If it got installed successfully, it should look like this: ![homepage](https://github.com/piroar/Project-Ghost-in-the-C/blob/main/assets/homepage.png)
@@ -31,12 +37,6 @@ This is an example that creates and edits the "main.c" file with the "micro" edi
 2. vim (command: vim main.c)
 3. micro (command: micro main.c)
 4. emacs (command: emacs main.c)
-
-## Prerequisites
-In order to efficiently use Ghost in the C, you should have introductory level knowledge at the programming language <<C>>. 
-
-Everything needed in terms of both advanced knowledge (like specific functions or libraries) and linux commands are mentioned at the hints of the exercise, the "Local Setup" and  the"How to use" guides.
-
 
 
 
