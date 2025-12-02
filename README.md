@@ -32,6 +32,10 @@ This is an example that creates and edits the "main.c" file with the "micro" edi
 3. micro (command: micro main.c)
 4. emacs (command: emacs main.c)
 
+## Prerequisites
+In order to efficiently use Ghost in the C, you should have introductory level knowledge at the programming language <<C>>. 
+
+Everything needed in terms of both advanced knowledge (like specific functions or libraries) and linux commands are mentioned at the hints of the exercise, the "Local Setup" and  the"How to use" guides.
 
 
 
