@@ -52,7 +52,7 @@ async def get_problem(prompt: str = "Provide me with a single, simple, unique pr
     
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-2.5-flash-lite",
             contents=current_prompt,
             config={
                 "response_mime_type": "application/json",
