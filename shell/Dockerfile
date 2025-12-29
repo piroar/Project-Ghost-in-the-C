@@ -3,7 +3,37 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y shellinabox nano vim micro emacs gcc && \
+    apt-get install -y --no-install-recommends \
+        shellinabox \
+        nano \
+        vim \
+        micro \
+        emacs \
+        gcc \
+        man-db \
+        manpages \
+        groff-base && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+
+RUN if [ -f /usr/bin/man.REAL ]; then \
+            dpkg-divert --rename --remove /usr/bin/man || true && \
+            mv -f /usr/bin/man.REAL /usr/bin/man || true; \
+        fi
+
+RUN if [ -f /etc/dpkg/dpkg.cfg.d/excludes ]; then \
+            sed -i '/path-exclude=\/usr\/share\/man\/*/d' /etc/dpkg/dpkg.cfg.d/excludes || true; \
+        fi
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends --reinstall \
+        coreutils \
+        util-linux \
+        findutils \
+        grep \
+        sed \
+        gawk && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
