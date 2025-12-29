@@ -72,13 +72,13 @@ button:focus-visible {
   position: fixed;
   top: 12px;
   right: 12px;
-  background: rgba(0, 0, 0, 0.92);
+  background: rgba(201, 4, 4, 0.92);
   padding: 6px 10px;
   border-radius: 8px;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
   z-index: 1000;
-  font-size: 14px;
-  display: flex;
+  font-size: 30px;
+  display: flex-end;
   gap: 12px;
   align-items: center;
   color: #fff;
