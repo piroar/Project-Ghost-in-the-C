@@ -175,7 +175,9 @@ function App() {
             <p>{problemDescription}</p>
           </div>
         )}
-
+        <div>
+          <p>Note: Your code must be written in a file called "main.c".</p>
+        </div>
         <div>
           {hints !== null && hints.length > 0 && (
             <button
