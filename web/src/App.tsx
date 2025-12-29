@@ -1,5 +1,5 @@
 // App.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 
 interface UnitTest {
@@ -24,8 +24,26 @@ function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [testing, setTesting] = useState<boolean>(false);
+  const [problemCount, setProblemCount] = useState<number>(() => Number(window.localStorage.getItem('problemCount')) || 0);
+  const [testCount, setTestCount] = useState<number>(() => Number(window.localStorage.getItem('testCount')) || 0);
+
+  // Reset counters on initial load (so each time you open the website they start at 0)
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('problemCount', '0');
+      window.localStorage.setItem('testCount', '0');
+    } catch {}
+    setProblemCount(0);
+    setTestCount(0);
+  }, []);
 
   const fetchProblem = async () => {
+    // increment press counter and persist
+    setProblemCount((prev) => {
+      const next = prev + 1;
+      try { window.localStorage.setItem('problemCount', String(next)); } catch {};
+      return next;
+    });
     setLoading(true);
     setError(null);
     setProblemDescription(null);
@@ -61,6 +79,12 @@ function App() {
   };
 
   const runTests = async () => {
+    // increment press counter and persist
+    setTestCount((prev) => {
+      const next = prev + 1;
+      try { window.localStorage.setItem('testCount', String(next)); } catch {};
+      return next;
+    });
     if (!unitTests || unitTests.length === 0) {
       setTestResults("No unit tests available to run.");
       return;
@@ -153,6 +177,10 @@ function App() {
 
   return (
     <div>
+      <div className="counter-box">
+        <div><strong>Problems:</strong> {problemCount}</div>
+        <div><strong>Tests:</strong> {testCount}</div>
+      </div>
       <div>
         <h1>Ghost In The C</h1>
 
