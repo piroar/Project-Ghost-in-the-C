@@ -26,6 +26,7 @@ function App() {
   const [testing, setTesting] = useState<boolean>(false);
   const [problemCount, setProblemCount] = useState<number>(() => Number(window.localStorage.getItem('problemCount')) || 0);
   const [testCount, setTestCount] = useState<number>(() => Number(window.localStorage.getItem('testCount')) || 0);
+  const [secondsElapsed, setSecondsElapsed] = useState<number>(0);
 
   // Reset counters on initial load (so each time you open the website they start at 0)
   useEffect(() => {
@@ -35,6 +36,13 @@ function App() {
     } catch {}
     setProblemCount(0);
     setTestCount(0);
+    // start session timer
+    const start = Date.now();
+    setSecondsElapsed(0);
+    const tid = setInterval(() => {
+      setSecondsElapsed(Math.floor((Date.now() - start) / 1000));
+    }, 1000);
+    return () => clearInterval(tid);
   }, []);
 
   const fetchProblem = async () => {
@@ -175,11 +183,20 @@ function App() {
     return null;
   };
 
+  const formatDuration = (secs: number) => {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    if (h > 0) return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
+
   return (
     <div>
       <div className="counter-box">
         <div><strong>Problems:</strong> {problemCount}</div>
         <div><strong>Tests:</strong> {testCount}</div>
+        <div><strong>Time:</strong> {formatDuration(secondsElapsed)}</div>
       </div>
       <div>
         <h1>Ghost In The C</h1>
