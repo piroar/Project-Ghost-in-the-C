@@ -177,7 +177,7 @@ function App() {
     if (unitTests !== null && unitTests.length > 0) {
       return (
         <aside className="unit-tests-panel" aria-label="Unit tests">
-          <h3>Unit Tests</h3>
+          <h3>Requirements</h3>
           <ul className="unit-test-list">
             {unitTests.map((test, index) => {
               const status = testStatuses && testStatuses[index];
@@ -204,8 +204,8 @@ function App() {
     }
     return (
       <aside className="unit-tests-panel">
-        <h3>Unit Tests</h3>
-        <p>No unit tests available.</p>
+        <h3>Requirements</h3>
+        <p>No requirements available.</p>
       </aside>
     );
   };
@@ -264,12 +264,6 @@ function App() {
         </div> 
 
         {displayHints()}
-
-        {testResults && (
-          <p>
-            <strong>Test Results:</strong> {testResults}
-          </p>
-        )}
       </div>
 
       <div>

@@ -33,6 +33,7 @@ RUN apt-get update && \
         findutils \
         grep \
         sed \
+        build-essential \
         gawk && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
