@@ -23,6 +23,7 @@ function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [testing, setTesting] = useState<boolean>(false);
+  const [testStatuses, setTestStatuses] = useState<Array<'idle'|'running'|'passed'|'failed'>>([]);
   const [problemCount, setProblemCount] = useState<number>(() => Number(window.localStorage.getItem('problemCount')) || 0);
   const [testCount, setTestCount] = useState<number>(() => Number(window.localStorage.getItem('testCount')) || 0);
   const [secondsElapsed, setSecondsElapsed] = useState<number>(0);
@@ -35,7 +36,6 @@ function App() {
     } catch {}
     setProblemCount(0);
     setTestCount(0);
-    // start session timer
     const start = Date.now();
     setSecondsElapsed(0);
     const tid = setInterval(() => {
@@ -45,7 +45,6 @@ function App() {
   }, []);
 
   const fetchProblem = async () => {
-    // increment press counter and persist
     setProblemCount((prev) => {
       const next = prev + 1;
       try { window.localStorage.setItem('problemCount', String(next)); } catch {};
@@ -85,7 +84,6 @@ function App() {
   };
 
   const runTests = async () => {
-    // increment press counter and persist
     setTestCount((prev) => {
       const next = prev + 1;
       try { window.localStorage.setItem('testCount', String(next)); } catch {};
@@ -103,6 +101,9 @@ function App() {
     try {
       const unitTestsAsJsonStrings = unitTests.map(test => JSON.stringify(test));
 
+      // mark all tests as running
+      setTestStatuses(unitTests.map(() => 'running'));
+
       const response = await fetch('/api/check/run-tests', {
         method: 'POST',
         headers: {
@@ -115,14 +116,34 @@ function App() {
 
       if (response.ok) {
         setTestResults(data.message);
+
+        // parse backend lines to determine per-test pass/fail
+        const lines: string[] = (data.message || '').split('\n').map((l: string) => l.trim());
+
+        // if a compile failure for any program exists, mark all tests failed for that program;
+        // for simplicity, we'll mark a test as failed if any line contains "Test {i} FAILED";
+        const statuses = unitTests.map((_, idx) => {
+          const testNum = idx + 1;
+          const failed = lines.some((l: string) => l.includes(`Test ${testNum} FAILED`));
+          const passed = lines.some((l: string) => l.includes(`Test ${testNum} PASSED`));
+          if (failed) return 'failed' as const;
+          if (passed) return 'passed' as const;
+          // fallback: if message contains "FAILED TO COMPILE" mark failed
+          if (lines.some((l: string) => l.includes('FAILED TO COMPILE'))) return 'failed' as const;
+          return 'idle' as const;
+        });
+
+        setTestStatuses(statuses);
       } else {
         setError(`Error running tests: ${data.error || JSON.stringify(data)}`);
         setTestResults(null);
+        setTestStatuses(unitTests.map(() => 'failed'));
       }
     } catch (error) {
       console.error('Error running tests:', error);
       setError('An error occurred while trying to run tests. Please ensure the C test runner backend is running.');
       setTestResults(null);
+      setTestStatuses(unitTests.map(() => 'failed'));
     } finally {
       setTesting(false);
     }
@@ -153,19 +174,24 @@ function App() {
   };
 
   const renderUnitTestsPanel = () => {
-    // A fixed, left-side panel that does not affect main layout.
     if (unitTests !== null && unitTests.length > 0) {
       return (
         <aside className="unit-tests-panel" aria-label="Unit tests">
           <h3>Unit Tests</h3>
           <ul className="unit-test-list">
-            {unitTests.map((test, index) => (
-              <li key={index}>
-                <div><strong>Args:</strong> <code>{JSON.stringify(test.args)}</code></div>
-                <div><strong>Expected:</strong> <code>{test.output}</code></div>
-                <div><strong>Exit:</strong> <code>{test.exit_code}</code></div>
-              </li>
-            ))}
+            {unitTests.map((test, index) => {
+              const status = testStatuses && testStatuses[index];
+              const icon = status === 'passed' ? '✅' : status === 'failed' ? '❌' : status === 'running' ? '⏳' : '▫️';
+              return (
+                <li key={index} className="unit-test-item">
+                  <div className="test-status"><span className="status-icon" aria-hidden>{icon}</span>
+                    <strong>Args:</strong> <code>{JSON.stringify(test.args)}</code>
+                  </div>
+                  <div><strong>Expected:</strong> <code>{test.output}</code></div>
+                  <div><strong>Exit:</strong> <code>{test.exit_code}</code></div>
+                </li>
+              );
+            })}
           </ul>
           <p className="muted">These tests will be sent to the backend service for compilation and execution.</p>
           <div style={{ marginTop: '0.75rem' }}>
