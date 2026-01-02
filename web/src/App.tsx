@@ -28,7 +28,6 @@ function App() {
   const [testCount, setTestCount] = useState<number>(() => Number(window.localStorage.getItem('testCount')) || 0);
   const [secondsElapsed, setSecondsElapsed] = useState<number>(0);
 
-  // Reset counters on initial load (so each time you open the website they start at 0)
   useEffect(() => {
     try {
       window.localStorage.setItem('problemCount', '0');
@@ -117,18 +116,14 @@ function App() {
       if (response.ok) {
         setTestResults(data.message);
 
-        // parse backend lines to determine per-test pass/fail
         const lines: string[] = (data.message || '').split('\n').map((l: string) => l.trim());
 
-        // if a compile failure for any program exists, mark all tests failed for that program;
-        // for simplicity, we'll mark a test as failed if any line contains "Test {i} FAILED";
         const statuses = unitTests.map((_, idx) => {
           const testNum = idx + 1;
           const failed = lines.some((l: string) => l.includes(`Test ${testNum} FAILED`));
           const passed = lines.some((l: string) => l.includes(`Test ${testNum} PASSED`));
           if (failed) return 'failed' as const;
           if (passed) return 'passed' as const;
-          // fallback: if message contains "FAILED TO COMPILE" mark failed
           if (lines.some((l: string) => l.includes('FAILED TO COMPILE'))) return 'failed' as const;
           return 'idle' as const;
         });
@@ -183,7 +178,7 @@ function App() {
               const status = testStatuses && testStatuses[index];
               const icon = status === 'passed' ? '✅' : status === 'failed' ? '❌' : status === 'running' ? '⏳' : '▫️';
               return (
-                <li key={index} className="unit-test-item">
+                <li key={index} className={`unit-test-item ${status ?? 'idle'}`}>
                   <div className="test-status"><span className="status-icon" aria-hidden>{icon}</span>
                     <strong>Args:</strong> <code>{JSON.stringify(test.args)}</code>
                   </div>
